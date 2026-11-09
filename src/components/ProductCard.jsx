@@ -1,100 +1,157 @@
+import React from 'react'
+import { Heart, Plus, Check, ShoppingBag, Trash2 } from 'lucide-react'
 
-import { useState } from "react";
+export default function ProductCard({
+    product,
+    setMyList,
+    login,
+    myList,
+    myWishList,
+    setWishList
+}) {
 
-const ProductCard = ({ product, myList, setMyList }) => {
-  const [isAdded, setIsAdded] = useState(false);
+    // Check My List
+    const isAdded = myList.some(
+        (pro) => pro.id === product.id
+    )
 
-  const handleAddToCart = () => {
-    if (isAdded) {
-      setMyList((prevList) =>
-        prevList.filter((item) => item.id !== product.id)
-      );
-      setIsAdded(false);
-    } else {
-      setMyList((prevList) => [...prevList, product]);
-      setIsAdded(true);
+    // Check Wishlist
+    const isWishlisted = myWishList.some(
+        (pro) => pro.id === product.id
+    )
+
+    // Add to My List
+    const handleAdd = () => {
+        if (!login) {
+            alert("Login first")
+            return
+        }
+
+        if (isAdded) {
+            return
+        }
+
+        setMyList((prev) => [...prev, product])
     }
-  };
 
-  return (
-    <div className="group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <div className="relative overflow-hidden bg-gray-50">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
-        />
+    // Add / Remove Wishlist
+    const handleWishlist = () => {
+        if (!login) {
+            alert("Login first")
+            return
+        }
 
-        {product.discount > 0 && (
-          <span className="absolute left-3 top-3 rounded-full bg-red-500 px-3 py-1 text-xs font-semibold text-white">
-            -{product.discount}%
-          </span>
-        )}
+        if (isWishlisted) {
+            setWishList((prev) =>
+                prev.filter((pro) => pro.id !== product.id)
+            )
+        } else {
+            setWishList((prev) => [...prev, product])
+        }
+    }
 
-        {product.isFeatured && (
-          <span className="absolute right-3 top-3 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
-            Featured
-          </span>
-        )}
-      </div>
+    return (
+        <div className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:-translate-y-2">
 
-      <div className="space-y-3 p-4">
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
-            {product.category}
-          </span>
+            {/* Product Image */}
+            <div className="relative h-[280px] overflow-hidden bg-gray-100">
 
-          <span className="text-sm font-medium text-amber-500">
-            ★ {product.rating}
-          </span>
+                <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+
+                {/* Featured Badge */}
+                <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-gray-800 text-xs font-bold px-3 py-2 rounded-full shadow">
+                    FEATURED
+                </span>
+
+                {/* Wishlist Button */}
+                <button
+                    onClick={handleWishlist}
+                    aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                    className={`absolute top-4 right-4 w-11 h-11 rounded-full flex items-center justify-center shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 ${
+                        isWishlisted
+                            ? "bg-red-500 text-white"
+                            : "bg-white/90 text-gray-600 hover:bg-red-500 hover:text-white"
+                    }`}
+                >
+                    <Heart
+                        size={21}
+                        fill={isWishlisted ? "currentColor" : "none"}
+                    />
+                </button>
+
+                {/* Wishlist Badge */}
+                {isWishlisted && (
+                    <span className="absolute bottom-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-2 rounded-full shadow">
+                        ♥ WISHLISTED
+                    </span>
+                )}
+
+            </div>
+
+            {/* Product Details */}
+            <div className="p-5">
+
+                <h2 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-green-600 transition-colors">
+                    {product.name}
+                </h2>
+
+                <p className="text-sm text-gray-500 leading-6 line-clamp-3 min-h-[72px]">
+                    {product.description}
+                </p>
+
+                <div className="border-t border-gray-100 mt-5 pt-4 flex flex-col gap-3">
+
+                    {/* Add to My List */}
+                    <button
+                        onClick={handleAdd}
+                        disabled={isAdded}
+                        className={`w-full h-12 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${
+                            isAdded
+                                ? "bg-green-100 text-green-700 cursor-not-allowed"
+                                : "bg-green-500 text-white hover:bg-green-600 hover:shadow-lg hover:shadow-green-200 active:scale-95"
+                        }`}
+                    >
+                        {isAdded ? (
+                            <>
+                                <Check size={19} />
+                                Added to My List
+                            </>
+                        ) : (
+                            <>
+                                <Plus size={19} />
+                                Add to My List
+                            </>
+                        )}
+                    </button>
+
+                    {/* Wishlist Button */}
+                    <button
+                        onClick={handleWishlist}
+                        className={`w-full h-11 rounded-xl font-semibold flex items-center justify-center gap-2 border transition-all duration-300 active:scale-95 ${
+                            isWishlisted
+                                ? "bg-red-50 border-red-200 text-red-600 hover:bg-red-100"
+                                : "bg-white border-gray-200 text-gray-600 hover:border-red-400 hover:text-red-500"
+                        }`}
+                    >
+                        {isWishlisted ? (
+                            <>
+                                <Trash2 size={18} />
+                                Remove from Wishlist
+                            </>
+                        ) : (
+                            <>
+                                <Heart size={18} />
+                                Add to Wishlist
+                            </>
+                        )}
+                    </button>
+
+                </div>
+            </div>
         </div>
-
-        <h2 className="truncate text-lg font-bold text-gray-900">
-          {product.name}
-        </h2>
-
-        <p className="line-clamp-2 min-h-10 text-sm leading-5 text-gray-500">
-          {product.description}
-        </p>
-
-        <div className="flex items-center gap-2">
-          <span className="text-xl font-bold text-blue-600">
-            ৳{product.price.toLocaleString("en-BD")}
-          </span>
-
-          <span className="text-sm text-gray-400 line-through">
-            ৳{product.originalPrice.toLocaleString("en-BD")}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          <span>{product.brand}</span>
-
-          <span
-            className={
-              product.stock > 0 ? "text-green-600" : "text-red-500"
-            }
-          >
-            {product.stock > 0
-              ? `${product.stock} in stock`
-              : "Out of stock"}
-          </span>
-        </div>
-
-        <button
-          onClick={handleAddToCart}
-          disabled={product.stock === 0}
-          className={`w-full rounded-xl px-4 py-3 font-semibold text-white transition duration-300 disabled:cursor-not-allowed disabled:bg-gray-300 ${
-            isAdded
-              ? "bg-green-600 hover:bg-green-700"
-              : "bg-blue-600 hover:bg-blue-700"
-          }`}
-        >
-          {isAdded ? "✓ Added to Cart" : "Add to Cart"}
-        </button>
-      </div>
-    </div>
-  );
-};
-
-export default ProductCard;
+    )
+}

@@ -1,12 +1,19 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import './App.css'
 import Banner from './components/Banner';
+import MyProductsContainer from './components/MyProductsContainer';
 import ProductContainer from './components/ProductContainer';
-import CartSection from './components/CartSection';
-import Navbar from './components/Navbar';
+import { contextData } from './lib/provider/ContextProvider';
+
 
 function App() {
   // const [count, setCount] = useState(0)
+  const [login, setLogin] = useState(false)
+  let [myList, setMyList] = useState([])
+
+    const contextDatas = useContext(contextData)
+      console.log(contextDatas,'h')
+
 
   const products = [
     {
@@ -291,22 +298,19 @@ function App() {
     },
   ];
 
-  let [myList, setMyList] = useState([])
 
 
 
   return (
-    <div >
-      <Navbar myList={myList} />
-      <Banner />
-      <ProductContainer myList={myList} setMyList={setMyList} products={products} />
 
-      <CartSection
-        myList={myList}
-        setMyList={setMyList}
-      />
+    <div >
+
+      <Banner />
+
+      <ProductContainer login={login} myList={myList} setMyList={setMyList} products={products} />
+
     </div>
   )
-}
+} 
 
 export default App
