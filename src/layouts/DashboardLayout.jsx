@@ -1,8 +1,20 @@
-import React from 'react'
-import { Outlet } from 'react-router'
+import React, { useContext, useEffect } from 'react'
+import { Outlet, useNavigate } from 'react-router'
 import Usersidabar from '../components/Usersidabar'
+import { contextData } from '../lib/provider/ContextProvider'
 
 export default function DashboardLayout() {
+
+    const { login } = useContext(contextData)
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (!login) {
+            navigate('/login', { replace: true })
+        }
+    }, [login, navigate])
+
+    if (!login) return null
     return (
         <div className="min-h-screen bg-slate-50">
 
